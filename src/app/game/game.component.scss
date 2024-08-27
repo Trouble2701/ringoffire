@@ -26,6 +26,33 @@
 }
 
 .pick-card{
-    transition: all 0.125s ease-in-out;
-    transform: scale(1.5) !important;
+    animation: pick-card-animation 1.2s ease-in-out;
+    transform: scale(1) translateX(200px) translateY(-240px) rotate(15deg);
+}
+
+.playedCard{
+    right: 20px;
+    transform: scale(1) translateX(0) translateY(-240px) rotate(15deg);
+}
+
+@keyframes pick-card-animation {
+    0% {
+        transform: scale(1);
+    }
+
+    20%{
+        transform: scale(1.7);
+    }
+
+    30%{
+        transform: scale(1.7);
+    }
+
+    50%{
+        transform: scale(1.7);
+    }
+
+    100%{
+        transform: scale(1) translateX(245px) translateY(-240px) rotate(15deg);
+    }
 }
