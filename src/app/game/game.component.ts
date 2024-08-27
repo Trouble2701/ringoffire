@@ -14,30 +14,36 @@ export class GameComponent {
   dontShow = true;
   currentCard: any;
   game:any =  Game;
-  lenghtOfStack:number = 52;
+  lenghtOfStack:number = 0;
   constructor() { }
   ngOnInit(): void {
     this.newGame();
   }
   newGame() {
     this.game = new Game();
+    this.lenghtOfStack = this.game.stack.length;
   }
 
   takeCard() {
     if (!this.pickCardAnimation && this.game.playedCards.length <= 51) {
       this.currentCard = this.game?.stack.pop();
       this.pickCardAnimation = true;
+      this.lenghtOfStack = this.lenghtOfStack-1;
+      console.log(this.lenghtOfStack);
       this.checkCard();
-      setTimeout(() => {
-        this.game.playedCards.push(this.currentCard);
-        this.pickCardAnimation = false;
-        this.lenghtOfStack = this.game.stack.length;
-      }, 1200);
+      this.defaultCard();
     }
   }
 
+  defaultCard(){
+    setTimeout(() => {
+      this.game.playedCards.push(this.currentCard);
+      this.pickCardAnimation = false;
+    }, 1200);
+  }
+
   checkCard(){
-    if(this.lenghtOfStack == 1){
+    if(this.lenghtOfStack == 0){
       this.dontShow = false;
     }
   }
