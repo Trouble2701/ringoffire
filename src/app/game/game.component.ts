@@ -29,7 +29,6 @@ export class GameComponent {
       this.currentCard = this.game?.stack.pop();
       this.pickCardAnimation = true;
       this.lenghtOfStack = this.lenghtOfStack-1;
-      console.log(this.lenghtOfStack);
       this.checkCard();
       this.defaultCard();
     }
