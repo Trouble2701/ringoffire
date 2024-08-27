@@ -5,3 +5,10 @@
     gap: $g;
     flex-direction: $fd;
 }
+
+@mixin standardSize($w: 100vw, $h: 100vh, $mw: 100%, $mh: 100%){
+    width: $w;
+    height: $h;
+    max-width: $mw;
+    max-height: $mh;
+}
