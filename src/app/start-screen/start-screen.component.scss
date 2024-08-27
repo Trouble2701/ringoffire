@@ -1,0 +1,55 @@
+div{
+    background-color: #404040;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    >div{
+        height: 800px;
+        position: relative;
+        >img{
+            height: 800px;
+            position: relative;
+        }
+    
+        >h2{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 60px;
+            font-size: 30px;
+            color: whitesmoke; 
+            text-decoration: overline underline;
+            text-transform: uppercase;
+            filter: drop-shadow(2px 4px 5px black);
+        }
+
+        >.label{
+            width: 400px;
+            height: 100px;
+            position: absolute;
+            bottom: 80px;
+            background-color: transparent !important;
+            background-image: url('./../../assets/img/label.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            font-size: 30px;
+            font-weight: bolder;
+            color: #970006;
+            transition: all 0.3s ease-in-out;
+
+            &:hover{
+                filter: brightness(1.1) drop-shadow(0 0 7px black);
+                text-shadow: 2px 2px 3px black;
+            }
+        }
+    }
+}
