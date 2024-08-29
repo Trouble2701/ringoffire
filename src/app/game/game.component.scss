@@ -6,7 +6,7 @@
 
 }
 
-.field{
+.field {
     @include standardSize();
     background-image: url('/assets/img/background.jpg');
     background-size: cover;
@@ -14,29 +14,31 @@
     background-position: center;
     @include standardFormat();
 
-    .card_stack{
+    .card_stack {
         position: relative;
-        >img{
+
+        >img {
             position: absolute;
-            width: 120px;   
+            width: 120px;
         }
 
-        .top-card{
+        .top-card {
             cursor: pointer;
             transition: all 0.1s ease-in-out;
-            &:hover{
+
+            &:hover {
                 transform: scale(1.1) translateY(-10px);
             }
         }
     }
 }
 
-.pick-card{
+.pick-card {
     animation: pick-card-animation 1.2s ease-in-out;
     transform: scale(1) translateX(200px) translateY(-240px) rotate(15deg);
 }
 
-.playedCard{
+.playedCard {
     right: 20px;
     transform: scale(1) translateX(0) translateY(-240px) rotate(15deg);
 }
@@ -46,24 +48,24 @@
         transform: scale(1);
     }
 
-    20%{
+    20% {
         transform: scale(1.7);
     }
 
-    30%{
+    30% {
         transform: scale(1.7);
     }
 
-    50%{
+    50% {
         transform: scale(1.7);
     }
 
-    100%{
+    100% {
         transform: scale(1) translateX(242px) translateY(-240px) rotate(15deg);
     }
 }
 
-.btn-add{
+.btn-add {
     position: absolute;
     right: 32px;
     bottom: 32px;
@@ -71,11 +73,87 @@
     border-radius: 100% !important;
     transition: all 0.2s ease-in-out;
 
-    &:hover{
+    &:hover {
         background-color: rgb(128, 128, 253);
     }
 
-    .plus{
+    .plus {
         color: white;
+    }
+}
+
+.card-info {
+    position: absolute;
+    bottom: 32px;
+    left: 100px;
+    right: 100px;
+}
+
+.dontEnd {
+    display: none;
+}
+
+.gameEnd {
+    display: flex;
+    position: absolute;
+    right: 0;
+    width: 120px;
+    transform: scale(2.5);
+    animation: end-card-animation 1.2s ease-in-out;
+}
+
+.gameEndButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 50px;
+    position: absolute;
+    right: 0;
+    width: 120px;
+    height: 200px;
+    transform: scale(2.5);
+    animation: end-card-animation 1.2s ease-in-out;
+
+    >h1{
+        font-size: 15px;
+        text-decoration: underline;
+        text-shadow: 2px 2px 2px black;
+    }
+
+    >div {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+
+        >img {
+            position: absolute;
+            width: 100px;
+        }
+
+        .noSp {
+            position: absolute;
+            top:-9px;
+            font-size: 8px;
+        }
+        
+        .neSp {
+            position: absolute;
+            top:-9px;
+            font-size: 8px;
+        }
+    }
+}
+
+@keyframes end-card-animation {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(2.5);
     }
 }

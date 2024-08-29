@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Game } from '../../models/game';
 import { PlayerComponent } from '../player/player.component';
@@ -7,25 +7,31 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { GameInfoComponent } from '../game-info/game-info.component';
 
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, PlayerComponent, MatButtonModule, MatIconModule, DialogAddPlayerComponent, AlertDialogComponent],
+  imports: [CommonModule, PlayerComponent, MatButtonModule, MatIconModule, DialogAddPlayerComponent, AlertDialogComponent, GameInfoComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
 })
 export class GameComponent {
+  gameDB = inject(Game);
   pickCardAnimation = false;
-  dontShow = true;
   currentCard: any;
-  game:any =  Game;
-  lenghtOfStack:number = 0;
-  constructor( public dialog:MatDialog) { }
+  game: any = Game;
+  lenghtOfStack: number = 0;
+  EndGameTitle = 'Spiel Beendet';
+  oldPlayers: string[] = [];
+  oldPlayersGender: string[] = [];
+  constructor(public dialog: MatDialog) { }
   ngOnInit(): void {
     this.newGame();
+    setInterval(() => this.infoStartGame(), 100);
   }
+
   newGame() {
     this.game = new Game();
     this.lenghtOfStack = this.game.stack.length;
@@ -33,25 +39,26 @@ export class GameComponent {
 
   takeCard() {
     if (!this.pickCardAnimation && this.game.playedCards.length <= 51 && this.game.players.length >= 2) {
+      this.gameDB.alertNumber = 2;
       this.currentCard = this.game?.stack.pop();
       this.pickCardAnimation = true;
-      this.lenghtOfStack = this.lenghtOfStack-1;
+      this.lenghtOfStack = this.lenghtOfStack - 1;
       this.checkCard();
       this.defaultCard();
-    }else if(this.game.stack.length == 52){
+    } else if (this.game.stack.length == this.gameDB.allCards) {
       this.openDialog();
     }
   }
 
-  nextPlayer(){
-    if(this.game.players.length-1 > this.game.currentPlayer){
-      this.game.currentPlayer += 1;
-    }else{
+  nextPlayer() {
+    if (this.game.players.length - 1 > this.game.currentPlayer) {
+      this.game.currentPlayer++;
+    } else {
       this.game.currentPlayer = 0;
     }
   }
 
-  defaultCard(){
+  defaultCard() {
     setTimeout(() => {
       this.game.playedCards.push(this.currentCard);
       this.pickCardAnimation = false;
@@ -59,57 +66,107 @@ export class GameComponent {
     }, 1200);
   }
 
-  checkCard(){
-    if(this.lenghtOfStack == 0){
-      this.dontShow = false;
+  checkCard() {
+    if (this.lenghtOfStack == 0) {
+      this.gameDB.dontShow = false;
+      this.endGame();
     }
   }
 
   openDialog(): void {
-    if(this.game.stack.length == 52 && this.game.players.length <=9){
+    if (this.game.stack.length == this.gameDB.allCards && this.game.players.length <= 9) {
       const dialogRef = this.dialog.open(DialogAddPlayerComponent);
       dialogRef.afterClosed().subscribe(result => {
         this.addedPlayer(result);
       });
-    }else{
-      this.openAlert('game');
+    } else if (this.game.stack.length < this.gameDB.allCards) {
+      this.openAlert();
+    } else if (this.game.players.length == 9) {
+      this.openAlert();
     }
   }
 
-  addedPlayer(result:any){
-    if(this.checkResult(result)){
+  addedPlayer(result: any) {
+    if (this.checkResult(result)) {
+      this.gameDB.alertNumber = 3;
       this.game.players.push(result.name);
       this.game.playerGender.push(result.gender);
-      if(this.game.players.length >= 2){
+      if (this.game.players.length >= 2) {
         this.startGame();
       }
-    }else if(result != 'closed'){
-      this.openAlert('player');
+    } else if (result != 'closed') {
+      this.gameDB.alertNumber = 1;
+      this.openAlert();
     }
   }
 
-  checkResult(result:any){
+  checkResult(result: any) {
     return result != undefined && result.name != '' && result.gender != '' && result != 'closed'
   }
 
-  openAlert(alert:string):void{
+  openAlert(): void {
     const dialogRef = this.dialog.open(AlertDialogComponent);
-    dialogRef.afterClosed().subscribe(()=>{
-      if(alert == 'player'){
+    dialogRef.afterClosed().subscribe(() => {
+      if (this.gameDB.alertNumber == 1) {
         this.openDialog();
       }
     });
   }
 
-  startGame(){
-    if(this.game.players.length >= 2){
+  startGame() {
+    if (this.game.players.length >= 2) {
       this.randomFirstPlayer(0, this.game.players.length);
-    }else{
+    } else {
       this.openDialog();
     }
   }
 
-  randomFirstPlayer(min:number, max:number){
-      this.game.currentPlayer = Math.floor(Math.random() * (max - min) + min);
+  randomFirstPlayer(min: number, max: number) {
+    this.game.currentPlayer = Math.floor(Math.random() * (max - min) + min);
+  }
+
+  infoStartGame() {
+    if (this.game.players.length < 2) {
+      this.gameDB.newTitleDB = 'Spieler!'
+      this.gameDB.newDisDB = 'Zuerst musst du mindestens 2 Spieler einfügen. Rechte seite auf das Plus klicken';
+    } else if (this.game.players.length >= 2) {
+      this.gameDB.newTitleDB = 'Starten des Spiels'
+      this.gameDB.newDisDB = 'Zum Starten brauchst du nur auf den Kartenstapel klicken. Viel Spaß :-)';
+    }
+  }
+
+  endGame() {
+    if (this.game.stack.length == 0) {
+      setTimeout(() => this.gameDB.endOfGame = true, 1200)
+    }
+  }
+
+  noSp() {
+    this.gameDB.endOfGame = false;
+    this.gameDB.dontShow = true;
+    this.saveOldPlayers();
+    this.newGame();
+    this.loadOldPlayers();
+    this.randomFirstPlayer(0, this.game.players.length);
+  }
+
+  saveOldPlayers(){
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.oldPlayers.push(this.game.players[i]);
+      this.oldPlayersGender.push(this.game.playerGender[i]);
+    }
+  }
+
+  loadOldPlayers(){
+    for (let c = 0; c < this.oldPlayers.length; c++) {
+      this.game.players.push(this.oldPlayers[c]);
+      this.game.playerGender.push(this.oldPlayersGender[c]);
+    }
+  }
+
+  neSp() {
+    this.gameDB.endOfGame = false;
+    this.gameDB.dontShow = true;
+    this.newGame();
   }
 }
