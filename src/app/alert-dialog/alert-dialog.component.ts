@@ -23,7 +23,6 @@ export class AlertDialogComponent {
   }
 
   alertDialog(){
-    console.log('DB: ', this.gameDB.alertNumber);
       if(this.gameDB.alertNumber == 1){
         this.alert = 'Bitte alles ausfüllen!';
       }else if(this.gameDB.alertNumber == 2){
