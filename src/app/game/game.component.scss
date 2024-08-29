@@ -1,5 +1,11 @@
 @import './../../include.scss';
 
+.playerPosition {
+    position: absolute;
+    right: 0px;
+
+}
+
 .field{
     @include standardSize();
     background-image: url('/assets/img/background.jpg');
@@ -54,5 +60,22 @@
 
     100%{
         transform: scale(1) translateX(242px) translateY(-240px) rotate(15deg);
+    }
+}
+
+.btn-add{
+    position: absolute;
+    right: 32px;
+    bottom: 32px;
+    background-color: rgb(72, 72, 255);
+    border-radius: 100% !important;
+    transition: all 0.2s ease-in-out;
+
+    &:hover{
+        background-color: rgb(128, 128, 253);
+    }
+
+    .plus{
+        color: white;
     }
 }
