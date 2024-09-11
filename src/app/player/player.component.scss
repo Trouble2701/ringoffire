@@ -1,7 +1,6 @@
 @import './../../include.scss';
 
 .player {
-    width: 285px;
     height: 50px;
     border-radius: 50px 0 0 50px;
     border: 2px solid;
@@ -23,28 +22,40 @@
 }
 
 .activ {
+    width: 50px;
     background-color: rgb(99, 99, 99);
     border-color:  rgb(168, 0, 0);
     animation: not-thisPlayer-animation 1.2s ease-in-out;
-    transform: translateX(235px) scale(1);
+    transform: scale(1);
+    transition: all 0.2s ease-in-out;
+    >span{
+        display: none;
+    }
 }
 
 .thisPlayer {
+    width: 285px;
     background-color: orange;
     border-color:  rgb(0, 109, 0);
     animation: thisPlayer-animation 1.2s ease-in-out;
-    transform: translateX(-10px) scale(1.6);
+    transform: scale(1.6);
+    transition: all 1.2s ease-in-out;
+    >span{
+        display: flex;
+    }
 }
 
 @keyframes thisPlayer-animation {
     from {
-        transform: translateX(235px) scale(1);
+        width: 50px;
+        transform: scale(1);
         background-color: rgb(99, 99, 99);
         border-color:  rgb(168, 0, 0);
     }
 
     to {
-        transform: translateX(-10px) scale(1.6);
+        width: 285px;
+        transform: scale(1.6);
         background-color: orange;
         border-color:  rgb(0, 109, 0);
     }
@@ -52,13 +63,15 @@
 
 @keyframes not-thisPlayer-animation {
     from {
-        transform: translateX(-10px) scale(1.6);
+        width: 285px;
+        transform: scale(1.6);
         background-color: orange;
         border-color:  rgb(0, 109, 0);
     }
 
     to {
-        transform: translateX(235px) scale(1);
+        width: 50px;
+        transform: scale(1);
         background-color: rgb(99, 99, 99);
         border-color:  rgb(168, 0, 0);
     }
