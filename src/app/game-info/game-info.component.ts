@@ -1,7 +1,10 @@
-import { Component, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnChanges, Injectable } from '@angular/core';
 import {MatCardModule} from '@angular/material/card';
 import { Game } from '../../models/game';
-import { interval } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
 
 @Component({
   selector: 'app-game-info',

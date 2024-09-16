@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DataBaseService } from '../firestore/database.service';
 import { Game } from '../../models/game';
 import { PlayerComponent } from '../player/player.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +9,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { GameInfoComponent } from '../game-info/game-info.component';
+import { ActivatedRoute } from '@angular/router';
 
+@Injectable({
+  providedIn: 'root'
+})
 
 @Component({
   selector: 'app-game',
@@ -26,15 +31,16 @@ export class GameComponent {
   EndGameTitle = 'Spiel Beendet';
   oldPlayers: string[] = [];
   oldPlayersGender: string[] = [];
-  constructor(public dialog: MatDialog) { }
-  ngOnInit(): void {
-    this.newGame();
-    setInterval(() => this.infoStartGame(), 100);
-  }
+  constructor(private route: ActivatedRoute,private dataBase: DataBaseService, public dialog: MatDialog) {
+    //this.newGame();
+    this.route.params.subscribe((params) =>this.dataBase.startExistGame(params['id']));
+    //setInterval(() => this.infoStartGame(), 100);
+   }
 
   newGame() {
     this.game = new Game();
     this.lenghtOfStack = this.game.stack.length;
+    this.dataBase.addDataBase();
   }
 
   takeCard() {

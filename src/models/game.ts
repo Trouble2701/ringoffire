@@ -10,6 +10,7 @@ export class Game {
     stack:string[] = [];
     playedCards:string[] = [];
     currentPlayer:number = 0;
+    testGame:string[] = [];
 
     alertNumber:number=1;
     newTitleDB?:string;
@@ -38,9 +39,9 @@ export class Game {
     constructor(){
         for(let i = 1; i < 14; i++){
             this.stack.push('ace_'+i);
-            //this.stack.push('clubs_'+i);
-            //this.stack.push('diamonds_'+i);
-            //this.stack.push('hearts_'+i);
+            this.stack.push('clubs_'+i);
+            this.stack.push('diamonds_'+i);
+            this.stack.push('hearts_'+i);
         }
 
         shuffle(this.stack);
@@ -49,6 +50,16 @@ export class Game {
 
     startCalcCards(){
         this.allCards = this.stack.length + this.playedCards.length;
+    }
+
+    public toJson(){
+        return {
+            players: this.players,
+            playerGender: this.playerGender,
+            stack: this.stack,
+            playedCards: this.playedCards,
+            currentPlayer: this.currentPlayer,
+        }
     }
 }
 
