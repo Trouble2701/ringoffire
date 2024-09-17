@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataBaseService } from '../firestore/database.service';
+import { Game } from '../../models/game';
 
 @Component({
   selector: 'app-start-screen',
@@ -11,19 +11,22 @@ import { DataBaseService } from '../firestore/database.service';
 })
 export class StartScreenComponent {
 
-  constructor(private dataBase: DataBaseService, private router: Router) {
-    this.dataBase.searchGames();
+  gameDB = inject(Game);
+
+  constructor(private router: Router) {
+    this.gameDB.searchGames();
     setTimeout(() => {
-      if (this.dataBase.gameID.length == 0) {
-        this.dataBase.addDataBase();
+      if (!this.gameDB.gameID) {
+        this.gameDB.restoreData();
+        this.gameDB.addDataBase();
       }
     }, 500);
   }
 
   newGame() {
     let newId = '';
-    if (this.dataBase.gameID) {
-      newId = '/' + this.dataBase.gameID;
+    if (this.gameDB.gameID) {
+      newId = '/' + this.gameDB.gameID;
     }
     //Start Game 
     this.router.navigateByUrl('/game' + newId);

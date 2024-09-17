@@ -1,6 +1,5 @@
 import { Component, inject, Injectable } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { DataBaseService } from '../firestore/database.service';
+import { CommonModule, Time } from '@angular/common';
 import { Game } from '../../models/game';
 import { PlayerComponent } from '../player/player.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,51 +21,54 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
 })
+
 export class GameComponent {
   gameDB = inject(Game);
   pickCardAnimation = false;
   currentCard: any;
-  game: any = Game;
   lenghtOfStack: number = 0;
   EndGameTitle = 'Spiel Beendet';
   oldPlayers: string[] = [];
   oldPlayersGender: string[] = [];
-  constructor(private route: ActivatedRoute,private dataBase: DataBaseService, public dialog: MatDialog) {
-    //this.newGame();
-    this.route.params.subscribe((params) =>this.dataBase.startExistGame(params['id']));
-    //setInterval(() => this.infoStartGame(), 100);
-   }
+  selfGame = false;
+  
+  constructor(private route: ActivatedRoute, public dialog: MatDialog) {
+    this.newGame();
+    setInterval(() => this.infoStartGame(), 100);
+  }
 
   newGame() {
-    this.game = new Game();
-    this.lenghtOfStack = this.game.stack.length;
-    this.dataBase.addDataBase();
+    this.route.params.subscribe((params) => this.gameDB.startExistGame(params['id']));
+    setTimeout(() => this.lenghtOfStack = this.gameDB.stack.length, 700);
+    setTimeout(() => this.endGame(), 1000);
   }
 
   takeCard() {
-    if (!this.pickCardAnimation && this.game.playedCards.length <= 51 && this.game.players.length >= 2) {
+    if (!this.pickCardAnimation && this.gameDB.playedCards.length <= 51 && this.gameDB.players.length >= 2) {
+      if (!this.gameDB.gameIsRun) this.gameDB.gameIsRun = true;
       this.gameDB.alertNumber = 2;
-      this.currentCard = this.game?.stack.pop();
+      this.currentCard = this.gameDB?.stack.pop();
       this.pickCardAnimation = true;
       this.lenghtOfStack = this.lenghtOfStack - 1;
       this.checkCard();
       this.defaultCard();
-    } else if (this.game.stack.length == this.gameDB.allCards) {
+      this.gameRun();
+    } else if (this.gameDB.stack.length == this.gameDB.allCards) {
       this.openDialog();
     }
   }
 
   nextPlayer() {
-    if (this.game.players.length - 1 > this.game.currentPlayer) {
-      this.game.currentPlayer++;
+    if (this.gameDB.players.length - 1 > this.gameDB.currentPlayer) {
+      this.gameDB.currentPlayer++;
     } else {
-      this.game.currentPlayer = 0;
+      this.gameDB.currentPlayer = 0;
     }
   }
 
   defaultCard() {
     setTimeout(() => {
-      this.game.playedCards.push(this.currentCard);
+      this.gameDB.playedCards.push(this.currentCard);
       this.pickCardAnimation = false;
       this.nextPlayer();
     }, 1200);
@@ -80,14 +82,14 @@ export class GameComponent {
   }
 
   openDialog(): void {
-    if (this.game.stack.length == this.gameDB.allCards && this.game.players.length <= 9) {
+    if (this.gameDB.stack.length == this.gameDB.allCards && this.gameDB.players.length <= 9) {
       const dialogRef = this.dialog.open(DialogAddPlayerComponent);
       dialogRef.afterClosed().subscribe(result => {
         this.addedPlayer(result);
       });
-    } else if (this.game.stack.length < this.gameDB.allCards) {
+    } else if (this.gameDB.stack.length < this.gameDB.allCards) {
       this.openAlert();
-    } else if (this.game.players.length == 9) {
+    } else if (this.gameDB.players.length == 9) {
       this.openAlert();
     }
   }
@@ -95,9 +97,9 @@ export class GameComponent {
   addedPlayer(result: any) {
     if (this.checkResult(result)) {
       this.gameDB.alertNumber = 3;
-      this.game.players.push(result.name);
-      this.game.playerGender.push(result.gender);
-      if (this.game.players.length >= 2) {
+      this.gameDB.players.push(result.name);
+      this.gameDB.playerGender.push(result.gender);
+      if (this.gameDB.players.length >= 2) {
         this.startGame();
       }
     } else if (result != 'closed') {
@@ -120,29 +122,34 @@ export class GameComponent {
   }
 
   startGame() {
-    if (this.game.players.length >= 2) {
-      this.randomFirstPlayer(0, this.game.players.length);
+    if (this.gameDB.players.length >= 2) {
+      this.randomFirstPlayer(0, this.gameDB.players.length);
     } else {
       this.openDialog();
     }
   }
 
+  gameRun() {
+    this.gameDB.Datenow = Date.now();
+    setTimeout(() => this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson()), 1300);
+  }
+
   randomFirstPlayer(min: number, max: number) {
-    this.game.currentPlayer = Math.floor(Math.random() * (max - min) + min);
+    this.gameDB.currentPlayer = Math.floor(Math.random() * (max - min) + min);
   }
 
   infoStartGame() {
-    if (this.game.players.length < 2) {
+    if (this.gameDB.players.length < 2) {
       this.gameDB.newTitleDB = 'Spieler!'
       this.gameDB.newDisDB = 'Zuerst musst du mindestens 2 Spieler einfügen. Rechte seite auf das Plus klicken';
-    } else if (this.game.players.length >= 2) {
+    } else if (this.gameDB.players.length >= 2) {
       this.gameDB.newTitleDB = 'Starten des Spiels'
       this.gameDB.newDisDB = 'Zum Starten brauchst du nur auf den Kartenstapel klicken. Viel Spaß :-)';
     }
   }
 
   endGame() {
-    if (this.game.stack.length == 0) {
+    if (this.gameDB.stack.length == 0) {
       setTimeout(() => this.gameDB.endOfGame = true, 1200)
     }
   }
@@ -150,29 +157,32 @@ export class GameComponent {
   noSp() {
     this.gameDB.endOfGame = false;
     this.gameDB.dontShow = true;
+    this.selfGame = true;
     this.saveOldPlayers();
+    this.gameDB.restoreData();
     this.newGame();
     this.loadOldPlayers();
-    this.randomFirstPlayer(0, this.game.players.length);
+    this.randomFirstPlayer(0, this.gameDB.players.length);
+    this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson());
   }
 
-  saveOldPlayers(){
-    for (let i = 0; i < this.game.players.length; i++) {
-      this.oldPlayers.push(this.game.players[i]);
-      this.oldPlayersGender.push(this.game.playerGender[i]);
+  saveOldPlayers() {
+    for (let i = 0; i < this.gameDB.players.length; i++) {
+      this.oldPlayers.push(this.gameDB.players[i]);
+      this.oldPlayersGender.push(this.gameDB.playerGender[i]);
     }
   }
 
-  loadOldPlayers(){
+  loadOldPlayers() {
     for (let c = 0; c < this.oldPlayers.length; c++) {
-      this.game.players.push(this.oldPlayers[c]);
-      this.game.playerGender.push(this.oldPlayersGender[c]);
+      this.gameDB.players.push(this.oldPlayers[c]);
+      this.gameDB.playerGender.push(this.oldPlayersGender[c]);
     }
   }
 
   neSp() {
-    this.gameDB.endOfGame = false;
-    this.gameDB.dontShow = true;
+    this.gameDB.restoreData();
+    this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson());
     this.newGame();
   }
 }
