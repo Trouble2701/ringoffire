@@ -20,6 +20,7 @@ export class Game {
     allGamesID: any[] = [];
     currentCardDB?:any = '';
     lenghtOfStack: number = 0;
+    pickCardAnimation = false;
 
     /**Gesuchte Spiele */
     findGame: any[] = [];
@@ -75,7 +76,8 @@ export class Game {
             currentPlayer: this.currentPlayer,
             gameIsRun: this.gameIsRun,
             Datenow: this.Datenow,
-            currentCardDB: this.currentCardDB
+            currentCardDB: this.currentCardDB,
+            pickCardAnimation: this.pickCardAnimation
         }
     }
 
@@ -142,14 +144,16 @@ export class Game {
     restoreData() {
         this.players = [];
         this.playerGender = [];
-        this.stack = this.playedCards;
+        this.stack = [];
+        this.addedStack();
         this.playedCards = [];
         this.currentPlayer = 0;
         this.gameIsRun = false;
         this.dontShow = true;
         this.endOfGame = false;
+        this.currentCardDB;
+        this.pickCardAnimation = false;
         this.Datenow;
-        this.shuffle(this.stack);
     }
 
     /**
@@ -182,6 +186,7 @@ export class Game {
         this.gameIsRun = this.findGame[0].gameIsRun;
         this.Datenow = this.findGame[0].Datenow;
         this.currentCardDB = this.findGame[0].currentCardDB;
+        this.pickCardAnimation = this.findGame[0].pickCardAnimation
     }
 
     /**

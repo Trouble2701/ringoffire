@@ -32,7 +32,6 @@ export class GameInfoComponent {
   infoStart() {
     setInterval(() => {
       if (this.gameDB.gameIsRun == true && this.gameDB.playedCards.length >= 1) {
-        if(this.gameDB.lenghtOfStack > this.gameDB.stack.length) this.gameDB.lenghtOfStack = this.gameDB.stack.length;
         this.cardNumber = this.gameDB.currentCardDB.split('_')[1];
         this.newTitle = this.gameDB.cardAction[+this.cardNumber - 1].title
         this.newDiscription = this.gameDB.cardAction[+this.cardNumber - 1].discription

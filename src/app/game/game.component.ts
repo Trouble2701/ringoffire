@@ -24,15 +24,23 @@ import { ActivatedRoute } from '@angular/router';
 
 export class GameComponent {
   gameDB = inject(Game);
-  pickCardAnimation = false;
+  cardAnimation: boolean = false;
   currentCard: any;
   EndGameTitle = 'Spiel Beendet';
   oldPlayers: string[] = [];
   oldPlayersGender: string[] = [];
   selfGame = false;
-  
+
   constructor(private route: ActivatedRoute, public dialog: MatDialog) {
     this.newGame();
+    this.cards()
+  }
+
+  cards() {
+    setInterval(() => {
+      this.cardAnimation = this.gameDB.pickCardAnimation
+      if (this.gameDB.lenghtOfStack > this.gameDB.stack.length) this.gameDB.lenghtOfStack = this.gameDB.stack.length;
+    }, 100);
   }
 
   /**
@@ -48,19 +56,26 @@ export class GameComponent {
    * This Funktion take the card and give the Ifo for Players
    */
   takeCard() {
-    if (!this.pickCardAnimation && this.gameDB.playedCards.length <= 51 && this.gameDB.players.length >= 2) {
-      if (!this.gameDB.gameIsRun) this.gameDB.gameIsRun = true;
-      this.gameDB.alertNumber = 2;
-      this.currentCard = this.gameDB?.stack.pop();
-      this.gameDB.currentCardDB = this.currentCard;
-      this.pickCardAnimation = true;
-      this.gameDB.lenghtOfStack = this.gameDB.lenghtOfStack - 1;
-      this.checkCard();
-      this.defaultCard();
-      this.gameRun();
+    if (this.gameDB.playedCards.length <= 51 && this.gameDB.players.length >= 2) {
+      this.showCards();
     } else if (this.gameDB.stack.length == this.gameDB.allCards) {
       this.openDialog();
     }
+  }
+
+  /**
+   * This Function Show Next Card
+   */
+  showCards() {
+    this.gameDB.Datenow = this.gameDB.timeJet + (2 * 60 * 60 * 1000)
+    if (!this.gameDB.gameIsRun) this.gameDB.gameIsRun = true;
+    this.gameDB.alertNumber = 2;
+    this.currentCard = this.gameDB?.stack.pop();
+    this.gameDB.currentCardDB = this.currentCard;
+    this.gameDB.pickCardAnimation = true;
+    this.gameDB.lenghtOfStack = this.gameDB.lenghtOfStack - 1;
+    this.checkCard();
+    this.saveGame();
   }
 
   /**
@@ -75,23 +90,19 @@ export class GameComponent {
   }
 
   /**
-   * This Function pushed played Card in playedCards
-   */
-  defaultCard() {
-    setTimeout(() => {
-      this.gameDB.playedCards.push(this.currentCard);
-      this.pickCardAnimation = false;
-      this.nextPlayer();
-    }, 1200);
-  }
-
-  /**
    * This Function lenght of Stack
    */
   checkCard() {
     if (this.gameDB.lenghtOfStack == 0) {
       this.gameDB.dontShow = false;
       this.endGame();
+    } else {
+      setTimeout(() => {
+        this.gameDB.pickCardAnimation = false;
+        this.gameDB.playedCards.push(this.currentCard);
+        this.nextPlayer();
+        this.saveGame();
+      }, 1200);
     }
   }
 
@@ -111,11 +122,11 @@ export class GameComponent {
   /**
    * This Function open Dialog Screen
    */
-  openDialogScreen(){
+  openDialogScreen() {
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
-      dialogRef.afterClosed().subscribe(result => {
-        this.addedPlayer(result);
-      });
+    dialogRef.afterClosed().subscribe(result => {
+      this.addedPlayer(result);
+    });
   }
 
   /**
@@ -128,6 +139,7 @@ export class GameComponent {
       this.gameDB.players.push(result.name);
       this.gameDB.playerGender.push(result.gender);
       if (this.gameDB.players.length >= 2) this.startGame();
+      this.saveGame();
     } else if (result != 'closed') {
       this.gameDB.alertNumber = 1;
       this.openAlert();
@@ -167,14 +179,6 @@ export class GameComponent {
   }
 
   /**
-   * This Function addet new datetime and save data in firebase
-   */
-  gameRun() {
-    setTimeout(() => this.gameDB.Datenow = this.gameDB.timeJet+(2 * 60 * 60 * 1000), 300);
-    setTimeout(() => this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson()), 1300);
-  }
-
-  /**
    * This Function shuffled Player
    * @param min min Number
    * @param max max Number
@@ -193,6 +197,13 @@ export class GameComponent {
   }
 
   /**
+   * This Function Save the Game
+   */
+  saveGame() {
+    this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson());
+  }
+
+  /**
    * This Function Start new Game with self Players
    */
   noSp() {
@@ -205,7 +216,7 @@ export class GameComponent {
     this.loadOldPlayers();
     this.randomFirstPlayer(0, this.gameDB.players.length);
     this.gameDB.gameIsRun = true;
-    this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson());
+    this.saveGame();
   }
 
   /**
@@ -234,7 +245,7 @@ export class GameComponent {
   neSp() {
     this.gameDB.restoreData();
     this.gameDB.gameIsRun = true;
-    this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson());
+    this.saveGame();
     this.newGame();
   }
 }

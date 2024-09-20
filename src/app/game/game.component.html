@@ -1,25 +1,25 @@
 <app-player *ngFor="let player of gameDB.players; let i = index" class="playerPosition" [playerActive]="i == gameDB.currentPlayer" [gender]="gameDB.playerGender[i]" [name]="player" [ngStyle]="{'top.px': i*80+80}"></app-player>
 <div class="field">
     <div class="card_stack">
-        <img [ngStyle]="{'right.px': i*2}" *ngFor="let c of gameDB.stack; let i = index;" src="/assets/img/cards/card_cover.png">
-        <img (click)="takeCard()" *ngIf="gameDB.dontShow" class="top-card" [ngStyle]="{'right.px': gameDB.lenghtOfStack*2}" src="/assets/img/cards/card_cover.png">
-        <img [ngStyle]="{'left.px': i*2+20}" *ngFor="let card of gameDB?.playedCards; let i = index;" src="/assets/img/cards/{{card}}.png" class="playedCard">
-        <img *ngIf="pickCardAnimation" [ngStyle]="{'right.px': gameDB.lenghtOfStack*2}" class="pick-card" src="/assets/img/cards/{{currentCard}}.png">
-        <img [class.gameEnd]="gameDB.endOfGame" src="/assets/img/cards/card_empty.png" class="dontEnd">
+        <img [ngStyle]="{'right.px': i*2}" *ngFor="let c of gameDB.stack; let i = index;" src="assets/img/cards/card_cover.png">
+        <img (click)="takeCard()" *ngIf="gameDB.dontShow" class="top-card" [ngStyle]="{'right.px': gameDB.lenghtOfStack*2}" src="assets/img/cards/card_cover.png">
+        <img [ngStyle]="{'left.px': i*2+20}" *ngFor="let card of gameDB?.playedCards; let i = index;" src="assets/img/cards/{{card}}.png" class="playedCard">
+        <img *ngIf="cardAnimation" [ngStyle]="{'right.px': gameDB.lenghtOfStack*2}" class="pick-card" src="assets/img/cards/{{gameDB.currentCardDB}}.png">
+        <img [class.gameEnd]="gameDB.endOfGame" src="assets/img/cards/card_empty.png" class="dontEnd">
         <div class="dontEnd" [class.gameEndButton]="gameDB.endOfGame">
             <h1>{{EndGameTitle}}</h1>
             <div (click)="noSp()">
-                <img src="/assets/img/label.png">
+                <img src="assets/img/label.png">
                 <p class="noSp">Nochmal Spielen</p>
             </div>
             <div (click)="neSp()">
-                <img src="/assets/img/label.png">
+                <img src="assets/img/label.png">
                 <p class="neSp">Neues Spiel</p>
             </div>
         </div>
     </div>
 </div>
-<app-game-info [card]="currentCard" class="card-info"></app-game-info>
+<app-game-info [card]="gameDB.currentCardDB" class="card-info"></app-game-info>
 <button mat-fab class="btn-add" (click)="openDialog()">
     <mat-icon class="plus">add</mat-icon>
   </button>
