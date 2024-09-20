@@ -31,10 +31,9 @@ export class GameComponent {
   oldPlayers: string[] = [];
   oldPlayersGender: string[] = [];
   selfGame = false;
-
+  
   constructor(private route: ActivatedRoute, public dialog: MatDialog) {
     this.newGame();
-    setInterval(() => this.infoStartGame(), 100);
   }
 
   /**
@@ -54,6 +53,7 @@ export class GameComponent {
       if (!this.gameDB.gameIsRun) this.gameDB.gameIsRun = true;
       this.gameDB.alertNumber = 2;
       this.currentCard = this.gameDB?.stack.pop();
+      this.gameDB.currentCardDB = this.currentCard;
       this.pickCardAnimation = true;
       this.lenghtOfStack = this.lenghtOfStack - 1;
       this.checkCard();
@@ -164,7 +164,7 @@ export class GameComponent {
    * This Function addet new datetime and save data in firebase
    */
   gameRun() {
-    setTimeout(() => this.gameDB.Datenow = this.gameDB.timeJet + (2 * 60 * 60 * 1000), 300);
+    setTimeout(() => this.gameDB.Datenow = this.gameDB.timeJet+(2 * 60 * 60 * 1000), 300);
     setTimeout(() => this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson()), 1300);
   }
 
@@ -175,19 +175,6 @@ export class GameComponent {
    */
   randomFirstPlayer(min: number, max: number) {
     this.gameDB.currentPlayer = Math.floor(Math.random() * (max - min) + min);
-  }
-
-  /**
-   * This Function added Startinfos
-   */
-  infoStartGame() {
-    if (this.gameDB.players.length < 2) {
-      this.gameDB.newTitleDB = 'Spieler!'
-      this.gameDB.newDisDB = 'Zuerst musst du mindestens 2 Spieler einfügen. Rechte seite auf das Plus klicken';
-    } else if (this.gameDB.players.length >= 2) {
-      this.gameDB.newTitleDB = 'Starten des Spiels'
-      this.gameDB.newDisDB = 'Zum Starten brauchst du nur auf den Kartenstapel klicken. Viel Spaß :-)';
-    }
   }
 
   /**

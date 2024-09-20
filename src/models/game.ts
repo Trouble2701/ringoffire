@@ -18,6 +18,7 @@ export class Game {
     timeJet: number;
     allGames: any[] = [];
     allGamesID: any[] = [];
+    currentCardDB?:any = '';
 
     /**Gesuchte Spiele */
     findGame: any[] = [];
@@ -72,7 +73,8 @@ export class Game {
             playedCards: this.playedCards,
             currentPlayer: this.currentPlayer,
             gameIsRun: this.gameIsRun,
-            Datenow: this.Datenow
+            Datenow: this.Datenow,
+            currentCardDB: this.currentCardDB
         }
     }
 
@@ -169,6 +171,7 @@ export class Game {
         this.currentPlayer = this.findGame[0].currentPlayer;
         this.gameIsRun = this.findGame[0].gameIsRun;
         this.Datenow = this.findGame[0].Datenow;
+        this.currentCardDB = this.findGame[0].currentCardDB;
     }
 
     /**
