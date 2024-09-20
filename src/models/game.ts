@@ -79,13 +79,18 @@ export class Game {
         }
     }
 
-    /** */
+    /**
+     * This Function Check the Time
+     */
     checkTime() {
         this.timeJet = Date.now();
         this.addedAllGames();
         this.checkGames();
     }
 
+    /**
+     * This Function Added all Games incl. GameID`s
+     */
     addedAllGames() {
         const q = query(this.getGamesRef(), limit(100));
         onSnapshot(q, (list) => {
@@ -98,6 +103,9 @@ export class Game {
         });
     }
 
+    /**
+     * This Function Delete Games are older then 2 Houres width no action`s
+     */
     checkGames() {
         for (let i = 0; i < this.allGamesID.length; i++) {
             if (this.allGames[i].gameIsRun == true && this.timeJet > this.allGames[i].Datenow) {
@@ -157,6 +165,7 @@ export class Game {
                 this.gameID = docId;
                 if (this.findGame[0]) this.addedJson();
                 if (this.playedCards.length == 0) this.shuffle(this.stack);
+                if(this.gameIsRun) this.alertNumber = 2;
                 setInterval(() => this.startCalcCards(), 200);
             });
     }

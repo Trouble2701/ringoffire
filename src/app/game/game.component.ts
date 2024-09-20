@@ -99,16 +99,23 @@ export class GameComponent {
    * This Function open the Dialog of added Players
    */
   openDialog(): void {
-    if (this.gameDB.stack.length == this.gameDB.allCards && this.gameDB.players.length <= 9) {
-      const dialogRef = this.dialog.open(DialogAddPlayerComponent);
-      dialogRef.afterClosed().subscribe(result => {
-        this.addedPlayer(result);
-      });
-    } else if (this.gameDB.stack.length < this.gameDB.allCards) {
+    if (this.gameDB.playedCards.length == 0 && this.gameDB.players.length <= 9) {
+      this.openDialogScreen();
+    } else if (this.gameDB.playedCards.length > 0) {
       this.openAlert();
     } else if (this.gameDB.players.length == 9) {
       this.openAlert();
     }
+  }
+
+  /**
+   * This Function open Dialog Screen
+   */
+  openDialogScreen(){
+    const dialogRef = this.dialog.open(DialogAddPlayerComponent);
+      dialogRef.afterClosed().subscribe(result => {
+        this.addedPlayer(result);
+      });
   }
 
   /**

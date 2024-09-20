@@ -26,6 +26,9 @@ export class GameInfoComponent {
 
   @Input() card?: any;
 
+  /**
+   * This Function Check if run the game
+   */
   infoStart() {
     setInterval(() => {
       if (this.gameDB.gameIsRun == true && this.gameDB.playedCards.length >= 1) {
