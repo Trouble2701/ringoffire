@@ -41,8 +41,8 @@ export class GameComponent {
    */
   newGame() {
     this.route.params.subscribe((params) => this.gameDB.startExistGame(params['id']));
-    setTimeout(() => this.lenghtOfStack = this.gameDB.stack.length, 700);
-    setTimeout(() => this.endGame(), 1000);
+    setTimeout(() => this.lenghtOfStack = this.gameDB.stack.length, 500);
+    setTimeout(() => this.endGame(), 1200);
   }
 
   /**

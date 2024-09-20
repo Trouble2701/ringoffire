@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnChanges, Injectable } from '@angular/core';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { Game } from '../../models/game';
 
 @Injectable({
@@ -16,39 +16,26 @@ import { Game } from '../../models/game';
 export class GameInfoComponent {
 
   gameDB = inject(Game);
-  title?:string;
-  discription?:string;
-  cardNumber?:any;
-  newTitle?:string;
-  newDiscription?:String;
+  cardNumber?: any;
+  newTitle?: string;
+  newDiscription?: String;
 
-  constructor(){
+  constructor() {
     this.infoStart();
-    this.gameInfo();
   }
 
-  @Input() card?:any;
+  @Input() card?: any;
 
-  gameInfo() {
+  infoStart() {
     setInterval(() => {
-      if(this.gameDB.gameIsRun)        {
+      if (this.gameDB.gameIsRun == true && this.gameDB.playedCards.length >= 1) {
         this.cardNumber = this.gameDB.currentCardDB.split('_')[1];
-        this.title = this.gameDB.cardAction[+this.cardNumber-1].title
-        this.discription = this.gameDB.cardAction[+this.cardNumber-1].discription
-      }
-    }, 300);
-  }
-
-  infoStart(){
-    setInterval(() => {
-      if(this.gameDB.playedCards.length > 0){
-        console.log(this.gameDB.playedCards.length)
-        this.newTitle = this.gameDB.newTitleDB;
-        this.newDiscription = this.gameDB.newDisDB;
-      }else{
+        this.newTitle = this.gameDB.cardAction[+this.cardNumber - 1].title
+        this.newDiscription = this.gameDB.cardAction[+this.cardNumber - 1].discription
+      } else {
         this.infoStartGame();
       }
-    }, 100);
+    }, 600);
   }
 
   /**
@@ -56,11 +43,11 @@ export class GameInfoComponent {
    */
   infoStartGame() {
     if (this.gameDB.players.length < 2) {
-      this.gameDB.newTitleDB = 'Spieler!'
-      this.gameDB.newDisDB = 'Zuerst musst du mindestens 2 Spieler einfügen. Rechte seite auf das Plus klicken';
+      this.newTitle = 'Spieler!'
+      this.newDiscription = 'Zuerst musst du mindestens 2 Spieler einfügen. Rechte seite auf das Plus klicken';
     } else if (this.gameDB.players.length >= 2) {
-      this.gameDB.newTitleDB = 'Starten des Spiels'
-      this.gameDB.newDisDB = 'Zum Starten brauchst du nur auf den Kartenstapel klicken. Viel Spaß :-)';
+      this.newTitle = 'Starten des Spiels'
+      this.newDiscription = 'Zum Starten brauchst du nur auf den Kartenstapel klicken. Viel Spaß :-)';
     }
   }
 }
