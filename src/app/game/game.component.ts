@@ -26,7 +26,6 @@ export class GameComponent {
   gameDB = inject(Game);
   pickCardAnimation = false;
   currentCard: any;
-  lenghtOfStack: number = 0;
   EndGameTitle = 'Spiel Beendet';
   oldPlayers: string[] = [];
   oldPlayersGender: string[] = [];
@@ -41,7 +40,7 @@ export class GameComponent {
    */
   newGame() {
     this.route.params.subscribe((params) => this.gameDB.startExistGame(params['id']));
-    setTimeout(() => this.lenghtOfStack = this.gameDB.stack.length, 500);
+    setTimeout(() => this.gameDB.lenghtOfStack = this.gameDB.stack.length, 500);
     setTimeout(() => this.endGame(), 1200);
   }
 
@@ -55,7 +54,7 @@ export class GameComponent {
       this.currentCard = this.gameDB?.stack.pop();
       this.gameDB.currentCardDB = this.currentCard;
       this.pickCardAnimation = true;
-      this.lenghtOfStack = this.lenghtOfStack - 1;
+      this.gameDB.lenghtOfStack = this.gameDB.lenghtOfStack - 1;
       this.checkCard();
       this.defaultCard();
       this.gameRun();
@@ -90,7 +89,7 @@ export class GameComponent {
    * This Function lenght of Stack
    */
   checkCard() {
-    if (this.lenghtOfStack == 0) {
+    if (this.gameDB.lenghtOfStack == 0) {
       this.gameDB.dontShow = false;
       this.endGame();
     }

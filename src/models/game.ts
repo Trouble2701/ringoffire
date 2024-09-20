@@ -19,6 +19,7 @@ export class Game {
     allGames: any[] = [];
     allGamesID: any[] = [];
     currentCardDB?:any = '';
+    lenghtOfStack: number = 0;
 
     /**Gesuchte Spiele */
     findGame: any[] = [];

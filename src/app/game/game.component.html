@@ -2,9 +2,9 @@
 <div class="field">
     <div class="card_stack">
         <img [ngStyle]="{'right.px': i*2}" *ngFor="let c of gameDB.stack; let i = index;" src="/assets/img/cards/card_cover.png">
-        <img (click)="takeCard()" *ngIf="gameDB.dontShow" class="top-card" [ngStyle]="{'right.px': lenghtOfStack*2}" src="/assets/img/cards/card_cover.png">
+        <img (click)="takeCard()" *ngIf="gameDB.dontShow" class="top-card" [ngStyle]="{'right.px': gameDB.lenghtOfStack*2}" src="/assets/img/cards/card_cover.png">
         <img [ngStyle]="{'left.px': i*2+20}" *ngFor="let card of gameDB?.playedCards; let i = index;" src="/assets/img/cards/{{card}}.png" class="playedCard">
-        <img *ngIf="pickCardAnimation" [ngStyle]="{'right.px': lenghtOfStack*2}" class="pick-card" src="/assets/img/cards/{{currentCard}}.png">
+        <img *ngIf="pickCardAnimation" [ngStyle]="{'right.px': gameDB.lenghtOfStack*2}" class="pick-card" src="/assets/img/cards/{{currentCard}}.png">
         <img [class.gameEnd]="gameDB.endOfGame" src="/assets/img/cards/card_empty.png" class="dontEnd">
         <div class="dontEnd" [class.gameEndButton]="gameDB.endOfGame">
             <h1>{{EndGameTitle}}</h1>
