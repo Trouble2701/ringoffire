@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { collection, Firestore, doc, onSnapshot, addDoc, updateDoc, deleteDoc, query, where, limit, orderBy } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +14,10 @@ export class Game {
     playedCards: string[] = [];
     currentPlayer: number = 0;
     gameIsRun: boolean = false;
-    Datenow:number = 0;
+    Datenow: number = 0;
+    timeJet: number;
+    allGames: any[] = [];
+    allGamesID: any[] = [];
 
     /**Gesuchte Spiele */
     findGame: any[] = [];
@@ -50,7 +54,9 @@ export class Game {
         { title: 'Kingscup', discription: 'Wird ein König gezogen, darf der Spieler ein Getränk seiner Wahl in den Kingscup gießen. Wird der vierte König gezogen, so muss der Spieler unverzüglich den Kingscup in der Mitte des Spiels leeren.' }
     ];
 
-    constructor() { }
+    constructor(private router: Router) {
+        setInterval(() => this.checkTime(), 3000);
+    }
 
     ngonDestroy() { }
 
@@ -70,6 +76,35 @@ export class Game {
         }
     }
 
+    /** */
+    checkTime() {
+        this.timeJet = Date.now();
+        this.addedAllGames();
+        this.checkGames();
+    }
+
+    addedAllGames() {
+        const q = query(this.getGamesRef(), limit(100));
+        onSnapshot(q, (list) => {
+            this.allGames = [];
+            this.allGamesID = [];
+            list.forEach(element => {
+                this.allGamesID.push(element.id);
+                this.allGames.push(element.data());
+            })
+        });
+    }
+
+    checkGames() {
+        for (let i = 0; i < this.allGamesID.length; i++) {
+            if (this.allGames[i].gameIsRun == true && this.timeJet > this.allGames[i].Datenow) {
+                if (this.gameID == this.allGamesID[i]) this.router.navigateByUrl('');
+                this.deleteDataBase(this.allGamesID[i]);
+            }
+        }
+    }
+
+    /** */
     /**
      * This function shuffled the Stack of Cards
      * @param array is the Stack of Cards
@@ -117,7 +152,7 @@ export class Game {
                 this.findGame = [];
                 this.findGame.push(list.data());
                 this.gameID = docId;
-                this.addedJson();
+                if (this.findGame[0]) this.addedJson();
                 if (this.playedCards.length == 0) this.shuffle(this.stack);
                 setInterval(() => this.startCalcCards(), 200);
             });
@@ -161,11 +196,12 @@ export class Game {
      * @returns return the Game of free ID
      */
     searchGames() {
+        this.gameID = '';
         const q = query(this.getGamesRef(), where('gameIsRun', '==', false), limit(1));
         return onSnapshot(q, (list) => {
             list.forEach(element => {
                 this.gameID = element.id;
-            })
+            });
         });
     }
 
@@ -191,7 +227,6 @@ export class Game {
             this.stack.push('diamonds_' + i);
             this.stack.push('hearts_' + i);
         }
-
         this.shuffle(this.stack);
     }
 

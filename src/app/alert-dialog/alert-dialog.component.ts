@@ -22,6 +22,9 @@ export class AlertDialogComponent {
     this.alertDialog();
   }
 
+  /**
+   * Set The Alert
+   */
   alertDialog(){
       if(this.gameDB.alertNumber == 1){
         this.alert = 'Bitte alles ausfüllen!';

@@ -31,18 +31,24 @@ export class GameComponent {
   oldPlayers: string[] = [];
   oldPlayersGender: string[] = [];
   selfGame = false;
-  
+
   constructor(private route: ActivatedRoute, public dialog: MatDialog) {
     this.newGame();
     setInterval(() => this.infoStartGame(), 100);
   }
 
+  /**
+   * This Function check the ID and start the Games
+   */
   newGame() {
     this.route.params.subscribe((params) => this.gameDB.startExistGame(params['id']));
     setTimeout(() => this.lenghtOfStack = this.gameDB.stack.length, 700);
     setTimeout(() => this.endGame(), 1000);
   }
 
+  /**
+   * This Funktion take the card and give the Ifo for Players
+   */
   takeCard() {
     if (!this.pickCardAnimation && this.gameDB.playedCards.length <= 51 && this.gameDB.players.length >= 2) {
       if (!this.gameDB.gameIsRun) this.gameDB.gameIsRun = true;
@@ -58,6 +64,9 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function give the Next Player
+   */
   nextPlayer() {
     if (this.gameDB.players.length - 1 > this.gameDB.currentPlayer) {
       this.gameDB.currentPlayer++;
@@ -66,6 +75,9 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function pushed played Card in playedCards
+   */
   defaultCard() {
     setTimeout(() => {
       this.gameDB.playedCards.push(this.currentCard);
@@ -74,6 +86,9 @@ export class GameComponent {
     }, 1200);
   }
 
+  /**
+   * This Function lenght of Stack
+   */
   checkCard() {
     if (this.lenghtOfStack == 0) {
       this.gameDB.dontShow = false;
@@ -81,6 +96,9 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function open the Dialog of added Players
+   */
   openDialog(): void {
     if (this.gameDB.stack.length == this.gameDB.allCards && this.gameDB.players.length <= 9) {
       const dialogRef = this.dialog.open(DialogAddPlayerComponent);
@@ -94,24 +112,34 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function added player and gender in a JSON
+   * @param result result give data of Player
+   */
   addedPlayer(result: any) {
     if (this.checkResult(result)) {
       this.gameDB.alertNumber = 3;
       this.gameDB.players.push(result.name);
       this.gameDB.playerGender.push(result.gender);
-      if (this.gameDB.players.length >= 2) {
-        this.startGame();
-      }
+      if (this.gameDB.players.length >= 2) this.startGame();
     } else if (result != 'closed') {
       this.gameDB.alertNumber = 1;
       this.openAlert();
     }
   }
 
+  /**
+   * This Function Check the Data input
+   * @param result data from input field 
+   * @returns true or false
+   */
   checkResult(result: any) {
     return result != undefined && result.name != '' && result.gender != '' && result != 'closed'
   }
 
+  /**
+   * This Funktion Open Alert
+   */
   openAlert(): void {
     const dialogRef = this.dialog.open(AlertDialogComponent);
     dialogRef.afterClosed().subscribe(() => {
@@ -121,6 +149,9 @@ export class GameComponent {
     });
   }
 
+  /**
+   * This Function start shuffle Players 
+   */
   startGame() {
     if (this.gameDB.players.length >= 2) {
       this.randomFirstPlayer(0, this.gameDB.players.length);
@@ -129,15 +160,26 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function addet new datetime and save data in firebase
+   */
   gameRun() {
-    this.gameDB.Datenow = Date.now();
+    setTimeout(() => this.gameDB.Datenow = this.gameDB.timeJet + (2 * 60 * 60 * 1000), 300);
     setTimeout(() => this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson()), 1300);
   }
 
+  /**
+   * This Function shuffled Player
+   * @param min min Number
+   * @param max max Number
+   */
   randomFirstPlayer(min: number, max: number) {
     this.gameDB.currentPlayer = Math.floor(Math.random() * (max - min) + min);
   }
 
+  /**
+   * This Function added Startinfos
+   */
   infoStartGame() {
     if (this.gameDB.players.length < 2) {
       this.gameDB.newTitleDB = 'Spieler!'
@@ -148,12 +190,18 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function Set end of Game true
+   */
   endGame() {
     if (this.gameDB.stack.length == 0) {
       setTimeout(() => this.gameDB.endOfGame = true, 1200)
     }
   }
 
+  /**
+   * This Function Start new Game with self Players
+   */
   noSp() {
     this.gameDB.endOfGame = false;
     this.gameDB.dontShow = true;
@@ -163,9 +211,13 @@ export class GameComponent {
     this.newGame();
     this.loadOldPlayers();
     this.randomFirstPlayer(0, this.gameDB.players.length);
+    this.gameDB.gameIsRun = true;
     this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson());
   }
 
+  /**
+   * This Function Save Old Players
+   */
   saveOldPlayers() {
     for (let i = 0; i < this.gameDB.players.length; i++) {
       this.oldPlayers.push(this.gameDB.players[i]);
@@ -173,6 +225,9 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function load Old Players
+   */
   loadOldPlayers() {
     for (let c = 0; c < this.oldPlayers.length; c++) {
       this.gameDB.players.push(this.oldPlayers[c]);
@@ -180,8 +235,12 @@ export class GameComponent {
     }
   }
 
+  /**
+   * This Function start new Game 
+   */
   neSp() {
     this.gameDB.restoreData();
+    this.gameDB.gameIsRun = true;
     this.gameDB.setGameData(this.gameDB.gameID, this.gameDB.toJson());
     this.newGame();
   }

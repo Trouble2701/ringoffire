@@ -12,23 +12,30 @@ import { Game } from '../../models/game';
 export class StartScreenComponent {
 
   gameDB = inject(Game);
+  newID:string;
 
   constructor(private router: Router) {
-    this.gameDB.searchGames();
-    setTimeout(() => {
-      if (!this.gameDB.gameID) {
-        this.gameDB.restoreData();
-        this.gameDB.addDataBase();
+    setInterval(() => {
+      if(this.router.url == '/'){
+        this.gameDB.searchGames()
+        setTimeout(() => {
+          if (!this.gameDB.gameID) {
+            this.gameDB.restoreData();
+            this.gameDB.addDataBase();
+          }
+        }, 187);
       }
     }, 500);
   }
 
+  /**
+   * This function Start the game Site
+   */
   newGame() {
-    let newId = '';
     if (this.gameDB.gameID) {
-      newId = '/' + this.gameDB.gameID;
+      this.newID = '/' + this.gameDB.gameID;
     }
     //Start Game 
-    this.router.navigateByUrl('/game' + newId);
+    this.router.navigateByUrl('/game' + this.newID);
   }
 }
