@@ -33,9 +33,9 @@ export class StartScreenComponent {
    */
   newGame() {
     if (this.gameDB.gameID) {
-      this.newID = '/' + this.gameDB.gameID;
+      this.newID = this.gameDB.gameID;
     }
     //Start Game 
-    this.router.navigateByUrl('/game' + this.newID);
+    this.router.navigateByUrl('game/'+this.newID);
   }
 }
